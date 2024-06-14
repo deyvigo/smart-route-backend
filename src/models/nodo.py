@@ -11,7 +11,7 @@ class ModelNodo:
   def post_one_nodo(self, id, latitud, longitud):
     cursor = self.db.cursor()
     try:
-      query = "INSERT INTO nodo (id, latitud, longitud) VALUES (%s, %s, %s);"
+      query = "INSERT INTO nodo (id_nodo, latitud, longitud) VALUES (%s, %s, %s);"
       cursor.execute(query, (id, latitud, longitud))
       self.db.commit()
       return { "last_row_id": cursor.lastrowid, "row_count": cursor.rowcount }, 200

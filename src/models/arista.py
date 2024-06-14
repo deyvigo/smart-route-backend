@@ -8,7 +8,7 @@ class ModelArista:
     if self.db:
       self.db.close()
 
-  def post_one_nodo(self, origen, destino, distancia):
+  def post_one_arist(self, origen, destino, distancia):
     cursor = self.db.cursor()
     try:
       query = "INSERT INTO arista (origen, destino, distancia) VALUES (%s, %s, %s);"
