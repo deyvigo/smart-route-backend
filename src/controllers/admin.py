@@ -42,3 +42,14 @@ class AdminController:
     if response:
       return response
     return { "Error": "no se pudo crear al driver" }
+  
+  @staticmethod
+  def update_status_by_driver():
+    username = request.json.get("username")
+    status = request.json.get("status")
+
+    response = DriverModel().update_status_by_username(status, username).get("row_count")
+
+    if response > 0:
+      return { "Exito": "status actualizado con exito" }
+    return { "Error": "no se actualizo el estado de ningun driver" }

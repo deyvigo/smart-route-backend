@@ -37,3 +37,13 @@ class DriverModel:
       return { "data": response }, 200
     except Exception as e:
       print(f"Error {e}")
+
+  def update_status_by_username(self, status, username):
+    cursor = self.db.cursor()
+    try:
+      query = "UPDATE driver SET status = %s WHERE username = %s;"
+      cursor.execute(query, (status, username))
+      self.db.commit()
+      return { "row_count": cursor.rowcount }
+    except Exception as e:
+      print(f"Error {e}")

@@ -10,3 +10,7 @@ def register_admin():
 @admin_blueprint.route("/admin/register/driver", methods=["POST"])
 def regist_one_driver():
   return AdminController.create_one_driver()
+
+@admin_blueprint.route("/admin/update/driver/status", methods=["PUT"])
+def update_status_from_driver():
+  return AdminController.update_status_by_driver()
