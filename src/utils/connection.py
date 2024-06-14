@@ -48,15 +48,26 @@ class Database:
       """)
 
       cursor.execute("""
+        create table if not exists nodo
+        (
+          id_nodo  bigint    not null
+            primary key,
+          latitud  double not null,
+          longitud double not null
+        );
+      """)
+
+      cursor.execute("""
         create table if not exists client_exact
         (
           id_client_exact int auto_increment
             primary key,
-          latitud         double not null,
-          longitud        double not null,
-          id_client       int    null,
+          id_client   int    not null,
+          id_nodo     bigint not null,
           constraint client_exact_client_id_client_fk
-            foreign key (id_client) references client (id_client)
+            foreign key (id_client) references client (id_client),
+          constraint client_exact_nodo_id_nodo_fk
+            foreign key (id_nodo) references nodo (id_nodo)
         );
       """)
 
@@ -89,25 +100,15 @@ class Database:
             foreign key (id_driver) references driver (id_driver)
         );
       """)
-
-      cursor.execute("""
-        create table if not exists nodo
-        (
-          id_nodo  int    not null
-            primary key,
-          latitud  double not null,
-          longitud double not null
-        );
-      """)
-
+      
       cursor.execute("""
         create table if not exists arista
         (
           id_arista int auto_increment
             primary key,
           distancia double not null,
-          origen    int    not null,
-          destino   int    not null,
+          origen    bigint    not null,
+          destino   bigint    not null,
           constraint arista_nodo_id_fk
             foreign key (origen) references nodo (id_nodo),
           constraint arista_nodo_id_fk_2
@@ -132,7 +133,7 @@ class Database:
         (
           id_point int auto_increment
             primary key,
-          id_nodo  int not null,
+          id_nodo  bigint not null,
           id_route int null,
           constraint point_nodo_id_fk
             foreign key (id_nodo) references nodo (id_nodo),
