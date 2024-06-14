@@ -25,19 +25,19 @@ class Database:
       cursor = db.cursor()
 
       cursor.execute("""
-        create table admin
+        create table if not exists admin
         (
           id_admin   int auto_increment
             primary key,
           username   varchar(30) not null,
-          password   varchar(30) not null,
+          password   varchar(70) not null,
           first_name varchar(50) not null,
           last_name  varchar(50) not null
         );
       """)
 
       cursor.execute("""
-        create table client
+        create table if not exists client
         (
           id_client int auto_increment
             primary key,
@@ -48,7 +48,7 @@ class Database:
       """)
 
       cursor.execute("""
-        create table client_exact
+        create table if not exists client_exact
         (
           id_client_exact int auto_increment
             primary key,
@@ -61,12 +61,12 @@ class Database:
       """)
 
       cursor.execute("""
-        create table driver
+        create table if not exists driver
         (
           id_driver  int auto_increment
             primary key,
           username   varchar(30) not null,
-          password   varchar(30) not null,
+          password   varchar(70) not null,
           first_name varchar(50) not null,
           last_name  varchar(50) not null,
           status     varchar(20) not null,
@@ -77,7 +77,7 @@ class Database:
       """)
 
       cursor.execute("""
-        create table driver_client
+        create table if not exists driver_client
         (
           id_driver_client int auto_increment
             primary key,
@@ -91,7 +91,7 @@ class Database:
       """)
 
       cursor.execute("""
-        create table nodo
+        create table if not exists nodo
         (
           id_nodo  int    not null
             primary key,
@@ -101,7 +101,7 @@ class Database:
       """)
 
       cursor.execute("""
-        create table arista
+        create table if not exists arista
         (
           id_arista int auto_increment
             primary key,
@@ -116,7 +116,7 @@ class Database:
       """)
 
       cursor.execute("""
-        create table route
+        create table if not exists route
         (
           id_route       int auto_increment
             primary key,
@@ -128,7 +128,7 @@ class Database:
       """)
 
       cursor.execute("""
-        create table point
+        create table if not exists point
         (
           id_point int auto_increment
             primary key,
