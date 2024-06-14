@@ -1,0 +1,1 @@
+from routes.admin import admin_blueprint

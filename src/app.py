@@ -7,8 +7,20 @@ from models.nodo import ModelNodo
 from models.arista import ModelArista
 from itertools import permutations
 
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
+
+from routes import admin_blueprint
+
 app = Flask(__name__)
+
+app.config["JWT_SECRET_KEY"] = "ada-smart-router"
+jwt = JWTManager(app)
+
+bcrypt = Bcrypt(app)
 CORS(app)
+
+app.register_blueprint(admin_blueprint)
 
 
 # #######################################################################
@@ -194,6 +206,11 @@ def search_path():
   # return { "data": client_nodes }
   return { "saludo": path }
   
+@app.route("/hello", methods=["GET"])
+def hello():
+  ModelNodo().get_all_nodo()
+  return { "saludo": "Hello World" }
+
 @app.route("/randomize", methods=["POST"])
 def randomize_client():
 
