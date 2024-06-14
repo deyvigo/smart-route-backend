@@ -1,6 +1,8 @@
-from models import AdminModel, DriverModel, ClientModel
+from models import AdminModel, DriverModel, ClientModel, ClientExactModel
 from flask import request
 from flask_bcrypt import  Bcrypt
+
+import osmnx as ox
 
 bcrypt = Bcrypt()
 
@@ -14,8 +16,8 @@ class AdminController:
     hashed_pass = bcrypt.generate_password_hash(password)
     response = AdminModel().post_one_admin(username, hashed_pass, first_name, last_name)
     if response:
-      return { "Exito": "Admin agregado" }
-    return { "Error": "No se pudo registrar" }
+      return response
+    return { "Error": "No se pudo registrar" }, 400
   
   @staticmethod
   def create_one_driver():
@@ -61,7 +63,15 @@ class AdminController:
     if not clients:
       return { "Error": "no se enviaron clientes" }, 400
     
+    place_name = "San Juan de Lurigancho, Perú"
+    G = ox.graph_from_place(place_name, network_type="drive")
+    
     for client in clients:
-      response = ClientModel().post_one_client(client["name"], client["latitud"], client["longitud"])
+      response_client = ClientModel().post_one_client(client["name"], client["latitud"], client["longitud"])
+      # print(client["latitud"], client["longitud"])
+      node = ox.nearest_nodes(G, X=client["longitud"], Y=client["latitud"])
+      # print(node)
+      response_c_e = ClientExactModel().post_one_client_exact(response_client["last_row_id"], node)
 
-    return { "last_row_id": response["last_row_id"] }
+
+    return { "last_row_id_client": response_client["last_row_id"], "row_count": len(clients), "last_row_id_ce": response_c_e["last_row_id"] }

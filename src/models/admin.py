@@ -14,7 +14,7 @@ class AdminModel:
       query = "INSERT INTO admin (username, password, first_name, last_name) VALUES (%s, %s, %s, %s);"
       cursor.execute(query, (username, password, first_name, last_name))
       self.db.commit()
-      return { "last_row_id": cursor.lastrowid, "row_count": cursor.rowcount }, 200
+      return { "last_row_id": cursor.lastrowid, "row_count": cursor.rowcount }, 201
     except Exception as e:
       print(f"Error {e}")
 
