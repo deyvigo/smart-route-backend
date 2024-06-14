@@ -23,10 +23,77 @@ class Database:
     db = self.connection()
     try:
       cursor = db.cursor()
+
       cursor.execute("""
-        create table if not exists nodo
+        create table admin
         (
-          id       bigint    not null
+          id_admin   int auto_increment
+            primary key,
+          username   varchar(30) not null,
+          password   varchar(30) not null,
+          first_name varchar(50) not null,
+          last_name  varchar(50) not null
+        );
+      """)
+
+      cursor.execute("""
+        create table client
+        (
+          id_client int auto_increment
+            primary key,
+          name      varchar(50) not null,
+          latitud   double      not null,
+          longitud  double      not null
+        );
+      """)
+
+      cursor.execute("""
+        create table client_exact
+        (
+          id_client_exact int auto_increment
+            primary key,
+          latitud         double not null,
+          longitud        double not null,
+          id_client       int    null,
+          constraint client_exact_client_id_client_fk
+            foreign key (id_client) references client (id_client)
+        );
+      """)
+
+      cursor.execute("""
+        create table driver
+        (
+          id_driver  int auto_increment
+            primary key,
+          username   varchar(30) not null,
+          password   varchar(30) not null,
+          first_name varchar(50) not null,
+          last_name  varchar(50) not null,
+          status     varchar(20) not null,
+          created_by int         not null,
+          constraint driver_admin_id_admin_fk
+            foreign key (created_by) references admin (id_admin)
+        );
+      """)
+
+      cursor.execute("""
+        create table driver_client
+        (
+          id_driver_client int auto_increment
+            primary key,
+          id_client_exact  int not null,
+          id_driver        int not null,
+          constraint driver_client_client_exact_id_client_exact_fk
+            foreign key (id_client_exact) references client_exact (id_client_exact),
+          constraint driver_client_driver_id_driver_fk
+            foreign key (id_driver) references driver (id_driver)
+        );
+      """)
+
+      cursor.execute("""
+        create table nodo
+        (
+          id_nodo  int    not null
             primary key,
           latitud  double not null,
           longitud double not null
@@ -34,19 +101,46 @@ class Database:
       """)
 
       cursor.execute("""
-        create table if not exists arista
+        create table arista
         (
-          id_arista bigint auto_increment
+          id_arista int auto_increment
             primary key,
           distancia double not null,
-          origen    bigint    not null,
-          destino   bigint    not null,
+          origen    int    not null,
+          destino   int    not null,
           constraint arista_nodo_id_fk
-            foreign key (origen) references nodo (id),
+            foreign key (origen) references nodo (id_nodo),
           constraint arista_nodo_id_fk_2
-            foreign key (destino) references nodo (id)
+            foreign key (destino) references nodo (id_nodo)
         );
       """)
+
+      cursor.execute("""
+        create table route
+        (
+          id_route       int auto_increment
+            primary key,
+          total_distance double not null,
+          id_driver      int    not null,
+          constraint route_driver_id_driver_fk
+            foreign key (id_driver) references driver (id_driver)
+        );
+      """)
+
+      cursor.execute("""
+        create table point
+        (
+          id_point int auto_increment
+            primary key,
+          id_nodo  int not null,
+          id_route int null,
+          constraint point_nodo_id_fk
+            foreign key (id_nodo) references nodo (id_nodo),
+          constraint point_route_id_route_fk
+            foreign key (id_route) references route (id_route)
+        );
+      """)
+
     except Exception as e:
       print(f"Error durante la creaciónd de tablas. {e}")
 
