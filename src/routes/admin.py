@@ -14,3 +14,7 @@ def regist_one_driver():
 @admin_blueprint.route("/admin/update/driver/status", methods=["PUT"])
 def update_status_from_driver():
   return AdminController.update_status_by_driver()
+
+@admin_blueprint.route("/admin/create/clients", methods=["POST"])
+def create_clients():
+  return AdminController.create_clients()

@@ -1,4 +1,4 @@
-from models import AdminModel, DriverModel
+from models import AdminModel, DriverModel, ClientModel
 from flask import request
 from flask_bcrypt import  Bcrypt
 
@@ -53,3 +53,15 @@ class AdminController:
     if response["row_count"] > 0:
       return response
     return { "Error": "no se actualizo el estado de ningun driver" }
+  
+  @staticmethod
+  def create_clients():
+    clients = request.json.get("clients")
+
+    if not clients:
+      return { "Error": "no se enviaron clientes" }, 400
+    
+    for client in clients:
+      response = ClientModel().post_one_client(client["name"], client["latitud"], client["longitud"])
+
+    return { "last_row_id": response["last_row_id"] }
