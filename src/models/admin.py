@@ -22,7 +22,7 @@ class AdminModel:
   def get_by_username(self, username):
     cursor = self.db.cursor()
     try:
-      query = "SELECT username, password FROM admin WHERE username = %s;"
+      query = "SELECT id_admin, username, password, first_name, last_name FROM admin WHERE username = %s;"
       cursor.execute(query, (username,))
       response = cursor.fetchone()
       return { "data": response }
