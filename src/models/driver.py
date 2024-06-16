@@ -47,3 +47,13 @@ class DriverModel:
       return { "row_count": cursor.rowcount }
     except Exception as e:
       print(f"Error {e}")
+
+  def get_all_actives_status(self):
+    cursor = self.db.cursor()
+    try:
+      query = "SELECT * FROM driver WHERE status = 'activo';"
+      cursor.execute(query)
+      response = cursor.fetchall()
+      return { "data": response }, 200
+    except Exception as e:
+      print(f"Error {e}")

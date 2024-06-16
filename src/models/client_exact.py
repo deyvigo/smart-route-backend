@@ -17,3 +17,13 @@ class ClientExactModel:
       return { "last_row_id": cursor.lastrowid, "row_count": cursor.rowcount }
     except Exception as e:
       print(f"Error {e} from table client_exact")
+
+  def get_all_clients_coords(self):
+    cursor = self.db.cursor()
+    try:
+      query = "SELECT id_nodo FROM client_exact;"
+      cursor.execute(query)
+      response = cursor.fetchall()
+      return { "data": response }, 200
+    except Exception as e:
+      print(f"Error {e}")

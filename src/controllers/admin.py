@@ -1,8 +1,11 @@
-from models import AdminModel, DriverModel, ClientModel, ClientExactModel
+from models import AdminModel, DriverModel, ClientModel, ClientExactModel, ModelArista, ModelNodo
 from flask import request
 from flask_bcrypt import  Bcrypt
+from graph.Graph import Graph as GraphRoad
 
 import osmnx as ox
+import networkx as nx
+from itertools import permutations
 
 bcrypt = Bcrypt()
 
@@ -73,5 +76,125 @@ class AdminController:
       # print(node)
       response_c_e = ClientExactModel().post_one_client_exact(response_client["last_row_id"], node)
 
-
     return { "last_row_id_client": response_client["last_row_id"], "row_count": len(clients), "last_row_id_ce": response_c_e["last_row_id"] }
+  
+  # @staticmethod
+  # def randomize():
+  #   data_clients, _ = ClientExactModel().get_all_clients_coords()
+  #   clients = data_clients.get("data")
+  #   if not clients:
+  #     return { "Error": "No hay clientes" }, 400
+
+  #   client_nodes = [client["id_nodo"] for client in clients]
+
+  #   data_drivers, _ = DriverModel().get_all_actives_status()
+  #   drivers = data_drivers.get("data")
+
+  #   if not drivers:
+  #     return { "Error": "No hay conductores" }, 400
+    
+  #   drivers_quantity = len(drivers)
+
+  #   quantitys = [0] * drivers_quantity
+  #   for i in range(len(clients)):
+  #     quantitys[i % drivers_quantity] += 1
+
+  #   quantitys = quantitys[::-1]
+
+  #   nodes = ModelNodo().get_all_nodo().get("data")
+  #   arists = ModelArista().get_all_arists().get("data")
+
+  #   Graph = nx.Graph()
+
+  #   for node in nodes:
+  #     Graph.add_node(node["id_nodo"])
+
+  #   for arist in arists:
+  #     Graph.add_edge(arist["origen"], arist["destino"], weight=arist["distancia"])
+
+  #   # search paths
+  #   all_paths = []
+  #   origen = 10735206149
+
+  #   current_clients = client_nodes.copy()
+
+  #   print(quantitys, current_clients)
+
+  #   print("inicio: ", current_clients)
+
+  #   for q in quantitys:
+  #     path, cost = GraphRoad.find_shortest_path_via_clients(Graph, origen, current_clients, q)
+  #     if not path:
+  #       break
+  #     all_paths.append((path, cost))
+
+  #     visited_nodes = set(path)
+  #     current_clients = [client for client in current_clients if client not in visited_nodes]
+    
+  #   print(all_paths)
+
+  #   return { "Hola": "Hola Mundo" }
+  
+  @staticmethod
+  def rand_clients():
+    origen = 10735206149
+    clients = ClientExactModel().get_all_clients_coords()[0].get("data")
+    drivers = len(DriverModel().get_all_actives_status()[0].get("data"))
+
+    client_nodes = [client["id_nodo"] for client in clients]
+
+    # Graph
+    nodes = ModelNodo().get_all_nodo().get("data")
+    arists = ModelArista().get_all_arists().get("data")
+
+    G = nx.Graph()
+
+    for node in nodes:
+      G.add_node(node["id_nodo"])
+
+    for arist in arists:
+      G.add_edge(arist["origen"], arist["destino"], weight=arist["distancia"])
+
+
+    all_nodes = [origen] + client_nodes
+    all_distances_by_nodes = {}
+
+    for node in all_nodes:
+      all_distances_by_nodes[node] = GraphRoad.dijkstra(G, node, client_nodes)
+
+    # divide clients number by drivers number
+    quantitys = [0] * drivers
+    for i in range(len(clients)):
+      quantitys[i % drivers] += 1
+    quantitys = quantitys[::-1]
+
+    all_paths = []
+    all_full_paths = []
+    # find min paths
+    for q in quantitys:
+      path, min_distance = GraphRoad.min_path_via_clients(all_distances_by_nodes, client_nodes, origen, q)
+      # delete clients mapped
+      for i in range (0, len(path) - 1):
+        client_nodes.remove(path[i + 1])
+      # add the origin to the end of the path for the return
+      path = path + (origen,)
+      all_paths.append((path, min_distance))
+
+    for path, _ in all_paths:
+      p = []
+      p.append(origen)
+      for i in range (0, len(path) - 1):
+        previous_nodes, _ = all_distances_by_nodes[path[i]]
+        path_segment = GraphRoad.reconstruct_path(previous_nodes, path[i + 1])[1:]
+        for point in path_segment:
+          p.append(point)
+
+      all_full_paths.append(p)
+
+    print(all_full_paths)
+    
+
+
+    return { "admin": "rand" }
+  # TODO get all drivers
+  # TODO get all clients
