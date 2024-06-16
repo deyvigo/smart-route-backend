@@ -1,6 +1,7 @@
 from models import AdminModel, DriverModel
-from flask_jwt_extended import create_access_token
+from datetime import timedelta
 
+from flask_jwt_extended import create_access_token
 from flask import request
 from flask_bcrypt import Bcrypt
 
@@ -25,7 +26,7 @@ class LoginController:
         "username": username,
         "id_admin": user_on_bd["id_admin"],
         "role": "ROLE_ADMIN"
-      })
+      }, expires_delta=timedelta(hours=1))
       return { "token": acces_token }, 200
     else:
       return { "error": "contraseña incorrecta" }, 401
@@ -48,7 +49,7 @@ class LoginController:
         "username": username,
         "id_driver": user_on_bd["id_driver"],
         "role": "ROLE_DRIVER"
-      })
+      }, expires_delta=timedelta(hours=1))
       return { "token": acces_token }, 200
     else:
       return { "error": "contraseña incorrecta" }, 401
