@@ -218,13 +218,13 @@ class AdminController:
   @staticmethod
   def get_all_drivers():
     response = DriverModel().get_all_without_password()
-    if response:
+    if response[0]["data"]:
       return response
     return { "Error": "No se pudo obtener a los conductores" }, 400
 
   @staticmethod
   def get_all_clients():
     response = ClientModel().get_all_clients()
-    if response:
+    if response[0]["data"]:
       return response
     return { "Error": "No se pudo obtener a los clientes" }, 400

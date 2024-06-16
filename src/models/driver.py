@@ -28,6 +28,16 @@ class DriverModel:
     except Exception as e:
       print(f"Error {e}")
 
+  def get_by_id_without_password(self, id_driver):
+    cursor = self.db.cursor()
+    try:
+      query = "SELECT id_driver, created_by, username, first_name, last_name, status FROM driver WHERE id_driver = %s;"
+      cursor.execute(query, (id_driver,))
+      response = cursor.fetchall()
+      return { "data": response }, 200
+    except Exception as e:
+      print(f"Error {e}")
+
   def get_all_without_password(self):
     cursor = self.db.cursor()
     try:

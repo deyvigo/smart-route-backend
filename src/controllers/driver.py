@@ -1,8 +1,8 @@
-from models import PointModel, RouteModel
+from models import PointModel, RouteModel, DriverModel
 
 class DriverController:
   @staticmethod
-  def get_id_route(id_driver):
+  def get_route_by_id_driver(id_driver):
     if not id_driver:
       return { "Error": "no se ha enviado ninguna id" }, 400
     route_data = RouteModel().get_by_id_driver(id_driver)[0].get("data")
@@ -22,3 +22,9 @@ class DriverController:
     response["points"] = point_route
 
     return { "data": response }
+  
+  def get_info_by_id(id_driver):
+    response = DriverModel().get_by_id_without_password(id_driver)
+    if response[0]["data"]:
+      return response
+    return { "Error": "No se pudo obtener la informacion del conductor" }, 404
