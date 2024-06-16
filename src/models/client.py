@@ -17,3 +17,13 @@ class ClientModel:
       return { "last_row_id": cursor.lastrowid, "row_count": cursor.rowcount }
     except Exception as e:
       print(f"Error {e}")
+
+  def get_all_clients(self):
+    cursor = self.db.cursor()
+    try:
+      query = "SELECT id_client, name, latitud, longitud FROM client;"
+      cursor.execute(query)
+      response = cursor.fetchall()
+      return { "data": response }, 200
+    except Exception as e:
+      print(f"Error {e}")

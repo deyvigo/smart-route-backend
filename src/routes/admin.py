@@ -26,3 +26,11 @@ def create_clients():
 @admin_blueprint.route("/admin/rand", methods=["GET"])
 def rand_client():
   return AdminController.rand_clients()
+
+@admin_blueprint.route("/admin/drivers", methods=["GET"])
+def get_all_drivers():
+  return AdminController.get_all_drivers()
+
+@admin_blueprint.route("/admin/clients", methods=["GET"])
+def get_all_clients():
+  return AdminController.get_all_clients()

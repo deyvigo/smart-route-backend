@@ -42,7 +42,7 @@ class AdminController:
     last_name = request.json.get("last_name")
     hashed_pass = bcrypt.generate_password_hash(password)
 
-    response = DriverModel().post_one_driver(username, password, first_name, last_name, default_status, admin["id_admin"])
+    response = DriverModel().post_one_driver(username, hashed_pass, first_name, last_name, default_status, admin["id_admin"])
 
     if response:
       return response
@@ -214,8 +214,17 @@ class AdminController:
       index = index + 1
 
     return { "Exito": "Rutas generadas con exitosamente" }, 200
-  
 
+  @staticmethod
+  def get_all_drivers():
+    response = DriverModel().get_all_without_password()
+    if response:
+      return response
+    return { "Error": "No se pudo obtener a los conductores" }, 400
 
-  # TODO get all drivers
-  # TODO get all clients
+  @staticmethod
+  def get_all_clients():
+    response = ClientModel().get_all_clients()
+    if response:
+      return response
+    return { "Error": "No se pudo obtener a los clientes" }, 400
