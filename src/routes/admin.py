@@ -27,11 +27,11 @@ def create_clients():
 def rand_client():
   return AdminController.rand_clients()
 
-@admin_blueprint.route("/admin/drivers", methods=["GET"])
+@admin_blueprint.route("/admin/all/drivers", methods=["GET"])
 def get_all_drivers():
   return AdminController.get_all_drivers()
 
-@admin_blueprint.route("/admin/clients", methods=["GET"])
+@admin_blueprint.route("/admin/all/clients", methods=["GET"])
 def get_all_clients():
   return AdminController.get_all_clients()
 
@@ -42,3 +42,7 @@ def delete_driver_by_id(id_driver):
 @admin_blueprint.route("/admin/all/routes", methods=["GET"])
 def get_all_routes():
   return AdminController.get_all_routes()
+
+@admin_blueprint.route("/admin/info/<id_admin>", methods=["GET"])
+def get_info_by_id(id_admin):
+  return AdminController.get_info_admin_by_id(id_admin)

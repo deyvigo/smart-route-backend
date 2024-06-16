@@ -252,3 +252,11 @@ class AdminController:
         response.append(route_segment)
 
     return { "data": response }
+  
+  @staticmethod
+  def get_info_admin_by_id(id_admin):
+    response = AdminModel().get_by_id(id_admin)
+    print(response)
+    if not response["data"]:
+      return { "error": "no se encuentra al usuario administrador" }, 404
+    return { "data": response }, 200

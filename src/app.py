@@ -10,7 +10,7 @@ from itertools import permutations
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
-from routes import admin_blueprint, driver_blueprint
+from routes import admin_blueprint, driver_blueprint, login_blueprint
 
 app = Flask(__name__)
 
@@ -22,6 +22,7 @@ CORS(app)
 
 app.register_blueprint(admin_blueprint)
 app.register_blueprint(driver_blueprint)
+app.register_blueprint(login_blueprint)
 
 
 # #######################################################################

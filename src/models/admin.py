@@ -28,3 +28,13 @@ class AdminModel:
       return { "data": response }
     except Exception as e:
       print(f"Error {e}")
+
+  def get_by_id(self, id_admin):
+    cursor = self.db.cursor()
+    try:
+      query = "SELECT id_admin, username, first_name, last_name FROM admin WHERE id_admin = %s;"
+      cursor.execute(query, (id_admin,))
+      response = cursor.fetchone()
+      return { "data": response }
+    except Exception as e:
+      print(f"Error {e}")
