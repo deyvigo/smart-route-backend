@@ -228,3 +228,8 @@ class AdminController:
     if response[0]["data"]:
       return response
     return { "Error": "No se pudo obtener a los clientes" }, 400
+  
+  @staticmethod
+  def delete_driver_by_id(id_driver):
+    response = DriverModel().delete_by_id(id_driver)
+    return response

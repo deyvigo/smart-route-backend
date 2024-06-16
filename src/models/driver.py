@@ -67,3 +67,17 @@ class DriverModel:
       return { "data": response }, 200
     except Exception as e:
       print(f"Error {e}")
+
+  def delete_by_id(self, id_driver):
+    cursor = self.db.cursor()
+    try:
+      query = "DELETE FROM driver WHERE id_driver = %s;"
+      cursor.execute(query, (id_driver,))
+      self.db.commit()
+      if cursor.rowcount == 0:
+        return { "Error": "Registro no encontrado" }, 404
+      else:
+        return { "Message": "Registro eliminado exitosamente" }, 200
+    
+    except Exception as e:
+      print(f"Error {e}")
