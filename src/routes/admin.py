@@ -19,9 +19,9 @@ def update_status_from_driver():
 def create_clients():
   return AdminController.create_clients()
 
-@admin_blueprint.route("/admin/randomize", methods=["GET"])
-def randomize_routes():
-  return AdminController.randomize()
+# @admin_blueprint.route("/admin/randomize", methods=["GET"])
+# def randomize_routes():
+#   return AdminController.randomize()
 
 @admin_blueprint.route("/admin/rand", methods=["GET"])
 def rand_client():
