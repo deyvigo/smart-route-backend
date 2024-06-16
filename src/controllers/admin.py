@@ -1,4 +1,4 @@
-from models import AdminModel, DriverModel, ClientModel, ClientExactModel, ModelArista, ModelNodo
+from models import AdminModel, DriverModel, ClientModel, ClientExactModel, ModelArista, ModelNodo, PointModel, RouteModel
 from flask import request
 from flask_bcrypt import  Bcrypt
 from graph.Graph import Graph as GraphRoad
@@ -139,7 +139,16 @@ class AdminController:
   def rand_clients():
     origen = 10735206149
     clients = ClientExactModel().get_all_clients_coords()[0].get("data")
-    drivers = len(DriverModel().get_all_actives_status()[0].get("data"))
+    data_drivers = DriverModel().get_all_actives_status()[0].get("data")
+    
+    if not data_drivers:
+      return { "Error": "no hay drivers para hacer la reparticion de rutas" }, 404
+    
+    if not clients:
+      return { "Error": "no hay clientes para generar las rutas" }, 404
+    
+    drivers = len(data_drivers)
+
 
     client_nodes = [client["id_nodo"] for client in clients]
 
@@ -180,21 +189,33 @@ class AdminController:
       path = path + (origen,)
       all_paths.append((path, min_distance))
 
+    # reconstruct paths and distances
     for path, _ in all_paths:
       p = []
       p.append(origen)
+      distance = _
       for i in range (0, len(path) - 1):
         previous_nodes, _ = all_distances_by_nodes[path[i]]
         path_segment = GraphRoad.reconstruct_path(previous_nodes, path[i + 1])[1:]
         for point in path_segment:
           p.append(point)
+      distance += all_distances_by_nodes[path[-2]][1][origen]
+      all_full_paths.append((p, distance))
 
-      all_full_paths.append(p)
+    index = 0
+    for driver_path, distance_driver in all_full_paths:
+      id_driver = data_drivers[index]["id_driver"]
+      print(id_driver)
+      response, _ = RouteModel().post_one_route(distance_driver, data_drivers[index]["id_driver"])
+      id_route = response.get("last_row_id")
+      for point in driver_path:
+        PointModel().post_one_point(point, id_route)
 
-    print(all_full_paths)
-    
+      index = index + 1
+
+    return { "Exito": "Rutas generadas con exitosamente" }, 200
+  
 
 
-    return { "admin": "rand" }
   # TODO get all drivers
   # TODO get all clients
