@@ -1,3 +1,4 @@
+from typing import Dict
 from models import AdminModel, DriverModel, ClientModel, ClientExactModel, ModelArista, ModelNodo, PointModel, RouteModel
 from flask import request
 from flask_bcrypt import  Bcrypt
@@ -233,3 +234,21 @@ class AdminController:
   def delete_driver_by_id(id_driver):
     response = DriverModel().delete_by_id(id_driver)
     return response
+  
+  @staticmethod
+  def get_all_routes():
+    drivers = DriverModel().get_all_without_password()[0]["data"]
+
+    response: list[Dict] = []
+
+    for driver in drivers:
+      route = RouteModel().get_by_id_driver(driver["id_driver"])[0]["data"]
+      route_segment = {}
+      if route:
+        route_segment["route"] = route[0]
+        route_segment["route"]["driver"] = driver
+        points = PointModel().get_by_id_route(route[0]["id_route"])[0]["data"]
+        route_segment["route"]["points"] = points
+        response.append(route_segment)
+
+    return { "data": response }

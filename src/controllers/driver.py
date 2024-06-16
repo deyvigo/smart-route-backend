@@ -10,7 +10,7 @@ class DriverController:
     if not route_data:
       return { "Error": "no existen rutas para este conductor" }, 404
 
-    # accede al primer elemento guardado en bd y saca el id_route
+    # accede al primer elemento guardado en bd
     route = route_data[0]
 
     response = {}
@@ -19,7 +19,7 @@ class DriverController:
 
     point_route = PointModel().get_by_id_route(route["id_route"])[0].get("data")
     
-    response["points"] = point_route
+    response["route"]["points"] = point_route
 
     return { "data": response }
   

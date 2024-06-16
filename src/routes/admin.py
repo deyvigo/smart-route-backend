@@ -38,3 +38,7 @@ def get_all_clients():
 @admin_blueprint.route("/admin/delete/driver/<id_driver>", methods=["DELETE"])
 def delete_driver_by_id(id_driver):
   return AdminController.delete_driver_by_id(id_driver)
+
+@admin_blueprint.route("/admin/all/routes", methods=["GET"])
+def get_all_routes():
+  return AdminController.get_all_routes()
