@@ -15,7 +15,7 @@
 ```bash
   pip install -r requirements.txt
 ```
-- Crear el archivo .enviromentvars según .envvars
+- Crear el archivo .envvars según .envvarsexample
 - Para DATABASE_NAME ejecutar en mysql CREATE DATABASE \<name\> y usar ese nombre
 - RUN
 ```bash
