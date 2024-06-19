@@ -75,9 +75,9 @@ class DriverModel:
       cursor.execute(query, (id_driver,))
       self.db.commit()
       if cursor.rowcount == 0:
-        return { "Error": "Registro no encontrado" }, 404
+        return { "error": "Registro no encontrado" }, 404
       else:
-        return { "Message": "Registro eliminado exitosamente" }, 200
+        return { "message": "Registro eliminado exitosamente" }, 200
     
     except Exception as e:
       print(f"Error {e}")

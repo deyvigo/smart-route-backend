@@ -21,7 +21,7 @@ class AdminController:
     response = AdminModel().post_one_admin(username, hashed_pass, first_name, last_name)
     if response:
       return response
-    return { "Error": "No se pudo registrar" }, 400
+    return { "error": "No se pudo registrar" }, 400
   
   @staticmethod
   def create_one_driver():
@@ -29,13 +29,13 @@ class AdminController:
 
     admin = AdminModel().get_by_username(created_by).get("data")
     if not admin:
-      return { "Error": "admin username no existe" }
+      return { "error": "admin username no existe" }
     
     username = request.json.get("username")
 
     driver = DriverModel().get_by_username(username).get("data")
     if driver:
-      return { "Error": "username ya existe" }
+      return { "error": "username ya existe" }
 
     default_status = "inactivo"
     password = request.json.get("password")
@@ -47,7 +47,7 @@ class AdminController:
 
     if response:
       return response
-    return { "Error": "no se pudo crear al driver" }
+    return { "error": "no se pudo crear al driver" }
   
   @staticmethod
   def update_status_by_driver():
@@ -58,14 +58,14 @@ class AdminController:
 
     if response["row_count"] > 0:
       return response
-    return { "Error": "no se actualizo el estado de ningun driver" }
+    return { "error": "no se actualizo el estado de ningun driver" }
   
   @staticmethod
   def create_clients():
     clients = request.json.get("clients")
 
     if not clients:
-      return { "Error": "no se enviaron clientes" }, 400
+      return { "error": "no se enviaron clientes" }, 400
     
     place_name = "San Juan de Lurigancho, Perú"
     G = ox.graph_from_place(place_name, network_type="drive")
@@ -143,10 +143,10 @@ class AdminController:
     data_drivers = DriverModel().get_all_actives_status()[0].get("data")
     
     if not data_drivers:
-      return { "Error": "no hay drivers para hacer la reparticion de rutas" }, 404
+      return { "error": "no hay drivers para hacer la reparticion de rutas" }, 404
     
     if not clients:
-      return { "Error": "no hay clientes para generar las rutas" }, 404
+      return { "error": "no hay clientes para generar las rutas" }, 404
     
     drivers = len(data_drivers)
 
@@ -214,21 +214,21 @@ class AdminController:
 
       index = index + 1
 
-    return { "Exito": "Rutas generadas con exitosamente" }, 200
+    return { "exito": "Rutas generadas con exitosamente" }, 200
 
   @staticmethod
   def get_all_drivers():
     response = DriverModel().get_all_without_password()
     if response[0]["data"]:
       return response
-    return { "Error": "No se pudo obtener a los conductores" }, 400
+    return { "error": "No se pudo obtener a los conductores" }, 400
 
   @staticmethod
   def get_all_clients():
     response = ClientModel().get_all_clients()
     if response[0]["data"]:
       return response
-    return { "Error": "No se pudo obtener a los clientes" }, 400
+    return { "error": "No se pudo obtener a los clientes" }, 400
   
   @staticmethod
   def delete_driver_by_id(id_driver):

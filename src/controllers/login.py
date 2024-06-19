@@ -14,7 +14,7 @@ class LoginController:
     password = request.json.get("password")
 
     if not username or not password:
-      return { "Error": "no ingreso los datos necesarios" }, 400
+      return { "error": "no ingreso los datos necesarios" }, 400
     
     user_on_bd = AdminModel().get_by_username(username)["data"]
 
@@ -37,7 +37,7 @@ class LoginController:
     password = request.json.get("password")
 
     if not username or not password:
-      return { "Error": "no ingreso los datos necesarios" }, 400
+      return { "error": "no ingreso los datos necesarios" }, 400
     
     user_on_bd = DriverModel().get_by_username(username)["data"]
 

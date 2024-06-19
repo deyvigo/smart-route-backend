@@ -4,11 +4,11 @@ class DriverController:
   @staticmethod
   def get_route_by_id_driver(id_driver):
     if not id_driver:
-      return { "Error": "no se ha enviado ninguna id" }, 400
+      return { "error": "no se ha enviado ninguna id" }, 400
     route_data = RouteModel().get_by_id_driver(id_driver)[0].get("data")
 
     if not route_data:
-      return { "Error": "no existen rutas para este conductor" }, 404
+      return { "error": "no existen rutas para este conductor" }, 404
 
     # accede al primer elemento guardado en bd
     route = route_data[0]
@@ -27,4 +27,4 @@ class DriverController:
     response = DriverModel().get_by_id_without_password(id_driver)
     if response[0]["data"]:
       return response
-    return { "Error": "No se pudo obtener la informacion del conductor" }, 404
+    return { "error": "No se pudo obtener la informacion del conductor" }, 404
