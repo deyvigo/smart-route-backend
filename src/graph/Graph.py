@@ -29,8 +29,8 @@ class Graph:
           previous_nodes[neighbor] = current_node
           heapq.heappush(priority_queue, (distance, neighbor))
 
-      if len(visited_clients) >= len(clients):
-        break
+      # if len(visited_clients) >= len(clients):
+      #   break
 
     return previous_nodes, distances
   

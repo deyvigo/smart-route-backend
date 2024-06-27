@@ -178,6 +178,7 @@ class AdminController:
       quantitys[i % drivers] += 1
     quantitys = quantitys[::-1]
 
+    print(quantitys)
     all_paths = []
     all_full_paths = []
     # find min paths
@@ -206,8 +207,7 @@ class AdminController:
     index = 0
     for driver_path, distance_driver in all_full_paths:
       id_driver = data_drivers[index]["id_driver"]
-      print(id_driver)
-      response, _ = RouteModel().post_one_route(distance_driver, data_drivers[index]["id_driver"])
+      response, _ = RouteModel().post_one_route(distance_driver, id_driver)
       id_route = response.get("last_row_id")
       for point in driver_path:
         PointModel().post_one_point(point, id_route)
