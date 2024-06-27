@@ -27,3 +27,13 @@ class RouteModel:
       return { "data": response }, 200
     except Exception as e:
       print(f"Error {e}")
+
+  def delete_all(self):
+    cursor = self.db.cursor()
+    try:
+      sql = "DELETE FROM route;"
+      cursor.execute(sql)
+      self.db.commit()
+      return { "message": "correctamente eliminadas las rutas" }, 200
+    except Exception as e:
+      print(f"Error {e}")

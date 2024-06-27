@@ -27,3 +27,13 @@ class PointModel:
       return { "data": response }, 200
     except Exception as e:
       print(f"Error {e}")
+
+  def delete_all(self):
+    cursor = self.db.cursor()
+    try:
+      sql = "DELETE FROM point;"
+      cursor.execute(sql)
+      self.db.commit()
+      return { "message": "correctamente eliminado" }, 200
+    except Exception as e:
+      print(f"Error {e}")

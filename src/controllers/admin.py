@@ -148,6 +148,13 @@ class AdminController:
     if not clients:
       return { "error": "no hay clientes para generar las rutas" }, 404
     
+    # eliminar registro anteriores de rutas para regenerarlas
+    
+    PointModel().delete_all()
+    RouteModel().delete_all()
+
+    # continuar
+
     drivers = len(data_drivers)
 
 
@@ -177,8 +184,7 @@ class AdminController:
     for i in range(len(clients)):
       quantitys[i % drivers] += 1
     quantitys = quantitys[::-1]
-
-    print(quantitys)
+    
     all_paths = []
     all_full_paths = []
     # find min paths
