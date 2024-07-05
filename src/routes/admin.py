@@ -23,7 +23,7 @@ def create_clients():
 # def randomize_routes():
 #   return AdminController.randomize()
 
-@admin_blueprint.route("/admin/rand", methods=["GET"])
+@admin_blueprint.route("/admin/rand/old", methods=["GET"])
 def rand_client():
   return AdminController.rand_clients()
 
@@ -46,3 +46,7 @@ def get_all_routes():
 @admin_blueprint.route("/admin/info/<id_admin>", methods=["GET"])
 def get_info_by_id(id_admin):
   return AdminController.get_info_admin_by_id(id_admin)
+
+@admin_blueprint.route("/admin/rand", methods=["GET"])
+def rand():
+  return AdminController.rand()

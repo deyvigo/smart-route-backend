@@ -79,63 +79,6 @@ class AdminController:
 
     return { "last_row_id_client": response_client["last_row_id"], "row_count": len(clients), "last_row_id_ce": response_c_e["last_row_id"] }
   
-  # @staticmethod
-  # def randomize():
-  #   data_clients, _ = ClientExactModel().get_all_clients_coords()
-  #   clients = data_clients.get("data")
-  #   if not clients:
-  #     return { "Error": "No hay clientes" }, 400
-
-  #   client_nodes = [client["id_nodo"] for client in clients]
-
-  #   data_drivers, _ = DriverModel().get_all_actives_status()
-  #   drivers = data_drivers.get("data")
-
-  #   if not drivers:
-  #     return { "Error": "No hay conductores" }, 400
-    
-  #   drivers_quantity = len(drivers)
-
-  #   quantitys = [0] * drivers_quantity
-  #   for i in range(len(clients)):
-  #     quantitys[i % drivers_quantity] += 1
-
-  #   quantitys = quantitys[::-1]
-
-  #   nodes = ModelNodo().get_all_nodo().get("data")
-  #   arists = ModelArista().get_all_arists().get("data")
-
-  #   Graph = nx.Graph()
-
-  #   for node in nodes:
-  #     Graph.add_node(node["id_nodo"])
-
-  #   for arist in arists:
-  #     Graph.add_edge(arist["origen"], arist["destino"], weight=arist["distancia"])
-
-  #   # search paths
-  #   all_paths = []
-  #   origen = 10735206149
-
-  #   current_clients = client_nodes.copy()
-
-  #   print(quantitys, current_clients)
-
-  #   print("inicio: ", current_clients)
-
-  #   for q in quantitys:
-  #     path, cost = GraphRoad.find_shortest_path_via_clients(Graph, origen, current_clients, q)
-  #     if not path:
-  #       break
-  #     all_paths.append((path, cost))
-
-  #     visited_nodes = set(path)
-  #     current_clients = [client for client in current_clients if client not in visited_nodes]
-    
-  #   print(all_paths)
-
-  #   return { "Hola": "Hola Mundo" }
-  
   @staticmethod
   def rand_clients():
     origen = 10735206149
@@ -152,6 +95,8 @@ class AdminController:
     
     PointModel().delete_all()
     RouteModel().delete_all()
+
+    print("Eliminé la ruta anterior")
 
     # continuar
 
@@ -179,12 +124,20 @@ class AdminController:
     for node in all_nodes:
       all_distances_by_nodes[node] = GraphRoad.dijkstra(G, node, client_nodes)
 
+    print("Terminé de ejecutar dijkstra para todos los clientes")
+
+
     # divide clients number by drivers number
     quantitys = [0] * drivers
     for i in range(len(clients)):
       quantitys[i % drivers] += 1
-    quantitys = quantitys[::-1]
+    # quantitys = quantitys[::-1] if comment = no reverse
     
+    print("Terminé de repartir la cantidad de clientes a los conductores.")
+    print(quantitys)
+
+    #TODO refactor. Demora mucho.
+
     all_paths = []
     all_full_paths = []
     # find min paths
@@ -196,6 +149,8 @@ class AdminController:
       # add the origin to the end of the path for the return
       path = path + (origen,)
       all_paths.append((path, min_distance))
+
+    print("Terminé de repartir los clientes")
 
     # reconstruct paths and distances
     for path, _ in all_paths:
@@ -266,3 +221,113 @@ class AdminController:
     if not response["data"]:
       return { "error": "no se encuentra al usuario administrador" }, 404
     return { "data": response }, 200
+  
+  @staticmethod
+  def rand():
+    origen = 10735206149
+    clients = ClientExactModel().get_all_clients_coords()[0].get("data")
+    data_drivers = DriverModel().get_all_actives_status()[0].get("data")
+    
+    if not data_drivers:
+      return { "error": "no hay drivers para hacer la reparticion de rutas" }, 404
+    
+    if not clients:
+      return { "error": "no hay clientes para generar las rutas" }, 404
+    
+    PointModel().delete_all()
+    RouteModel().delete_all()
+    
+    drivers = len(data_drivers)
+
+    client_nodes = [client["id_nodo"] for client in clients]
+
+    # Graph
+    nodes = ModelNodo().get_all_nodo().get("data")
+    arists = ModelArista().get_all_arists().get("data")
+
+    G = nx.Graph()
+
+    for node in nodes:
+      G.add_node(node["id_nodo"])
+
+    for arist in arists:
+      G.add_edge(arist["origen"], arist["destino"], weight=arist["distancia"])
+
+    all_nodes = [origen] + client_nodes
+    all_distances_by_nodes = {}
+
+    for node in all_nodes:
+      all_distances_by_nodes[node] = GraphRoad.dijkstra(G, node, client_nodes)
+
+
+    quantitys = [0] * drivers
+    for i in range(len(clients)):
+      quantitys[i % drivers] += 1
+
+    all_distances = { node: {} for node in all_nodes}
+
+    # create all_distances
+    for i in range(0, len(all_nodes)):
+      for j in range(0, len(all_nodes)):
+        if all_nodes[i] != all_nodes[j]:
+          dict_distances = all_distances_by_nodes[all_nodes[i]][1]
+          distance = dict_distances[all_nodes[j]]
+          all_distances[all_nodes[i]][all_nodes[j]] = distance
+          all_distances[all_nodes[j]][all_nodes[i]] = distance
+
+    # eliminar la distancia a origen desde cualquier nodo cliente
+    for c in client_nodes:
+      if origen in all_distances[c]:
+        del all_distances[c][origen]
+
+    # calcular la distancia mínima eligiendo el nodo más cercano en cada iteración
+    path_results = []
+    visited = set()
+    for q in quantitys:
+      all_d = all_distances.copy()
+      partial_path = [origen]
+      current_node = origen
+      for i in range(0, q):
+        # delete visited nodes from all_d
+        for node in visited:
+          if node in all_d[current_node]:
+            del all_d[current_node][node]
+        # select the min distance node
+        if not all_d[current_node]:
+          partial_path.append(current_node)
+          break
+        point = min(all_d[current_node], key=all_d[current_node].get)
+        partial_path.append(point)
+        visited.add(point)
+        current_node = point
+
+      partial_path.append(origen)
+      path_results.append(partial_path)
+
+    # reconstruir los caminos
+    all_full_paths = []
+    for path in path_results:
+      p = []
+      p.append(origen)
+      distance = 0
+      for i in range(0, len(path) - 1):
+        previous_nodes, _ = all_distances_by_nodes[path[i]]
+        path_segment = GraphRoad.reconstruct_path(previous_nodes, path[i + 1])[1:]
+        for point in path_segment:
+          p.append(point)
+        distance += all_distances_by_nodes[path[i]][1][path[i + 1]]
+      distance += all_distances_by_nodes[path[-2]][1][origen]
+      all_full_paths.append((p, distance))
+
+    # agregar a la base de datos
+    index = 0
+    for driver_path, distance_driver in all_full_paths:
+      id_driver = data_drivers[index]["id_driver"]
+      response, _ = RouteModel().post_one_route(distance_driver, id_driver)
+      id_route = response.get("last_row_id")
+      for point in driver_path:
+        PointModel().post_one_point(point, id_route)
+
+      index = index + 1
+    print(quantitys)
+    return { "message": "Hello World" }
