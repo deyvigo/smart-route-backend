@@ -22,7 +22,7 @@ class DriverModel:
   def get_by_username(self, username):
     cursor = self.db.cursor()
     try:
-      query = "SELECT * FROM driver WHERE BINARY username = %s;"
+      query = "SELECT * FROM driver WHERE BINARY username = %s AND status = 'activo';"
       cursor.execute(query, (username,))
       response = cursor.fetchone()
       return { "data": response }
