@@ -18,10 +18,11 @@ class DriverModel:
     except Exception as e:
       print(f"Error {e}")
 
+  # for login driver
   def get_by_username(self, username):
     cursor = self.db.cursor()
     try:
-      query = "SELECT * FROM driver WHERE username = %s;"
+      query = "SELECT * FROM driver WHERE BINARY username = %s;"
       cursor.execute(query, (username,))
       response = cursor.fetchone()
       return { "data": response }

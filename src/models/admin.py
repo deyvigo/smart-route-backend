@@ -18,11 +18,11 @@ class AdminModel:
     except Exception as e:
       print(f"Error {e}")
 
-
+  # for login admin
   def get_by_username(self, username):
     cursor = self.db.cursor()
     try:
-      query = "SELECT id_admin, username, password, first_name, last_name FROM admin WHERE username = %s;"
+      query = "SELECT id_admin, username, password, first_name, last_name FROM admin WHERE BINARY username = %s;"
       cursor.execute(query, (username,))
       response = cursor.fetchone()
       return { "data": response }
